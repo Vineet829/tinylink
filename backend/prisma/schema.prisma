@@ -1,0 +1,20 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Link {
+  id            Int       @id @default(autoincrement())
+  code          String    @unique @db.VarChar(8)
+  targetUrl     String    @map("target_url")
+  totalClicks   Int       @default(0) @map("total_clicks")
+  lastClickedAt DateTime? @map("last_clicked_at")
+  createdAt     DateTime  @default(now()) @map("created_at")
+  updatedAt     DateTime  @updatedAt @map("updated_at")
+
+  @@index([code])
+  @@map("links")
+}
