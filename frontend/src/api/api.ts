@@ -1,25 +1,6 @@
+import type {Link, CreateLinkRequest, HealthResponse} from "../types/index"
+
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
-
-export interface Link {
-  code: string;
-  targetUrl: string;
-  totalClicks: number;
-  lastClickedAt: string | null;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateLinkRequest {
-  targetUrl: string;
-  code?: string;
-}
-
-export interface HealthResponse {
-  ok: boolean;
-  version: string;
-  uptime?: number;
-  timestamp?: string;
-}
 
 export const createLink = async (data: CreateLinkRequest): Promise<Link> => {
   const response = await fetch(`${API_URL}/api/links`, {
