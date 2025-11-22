@@ -1,6 +1,15 @@
 import prisma from '../prisma/client';
 import { isValidUrl, isValidCode } from '../utils/validators';
-import { Request, Response, NextFunction } from 'express';
+import { randomInt } from 'crypto';
+
+function generateShortCode(): string {
+  const charset = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  let result = '';
+  for (let i = 0; i < 6; i++) {
+    result += charset[randomInt(0, charset.length)];
+  }
+  return result;
+}
 
 export async function createLink({ code, targetUrl }: { code?: string; targetUrl: string }) {
   if (!isValidUrl(targetUrl)) {
@@ -13,7 +22,7 @@ export async function createLink({ code, targetUrl }: { code?: string; targetUrl
     err.status = 400;
     throw err;
   }
-  const finalCode = code || Math.random().toString(36).slice(-8);
+  const finalCode = code || generateShortCode();
   const exists = await prisma.link.findUnique({ where: { code: finalCode } });
   if (exists) {
     const err = new Error('Code already exists') as Error & { status?: number };
@@ -45,22 +54,17 @@ export async function deleteLink(code: string) {
   return prisma.link.delete({ where: { code } });
 }
 
-export async function redirectForCode(req: Request, res: Response, next: NextFunction) {
-  try {
-    const code = req.params.code;
-    const link = await prisma.link.findUnique({ where: { code } });
-    if (!link) {
-      return res.status(404).json({ error: 'Not found' });
-    }
-    await prisma.link.update({
-      where: { code },
-      data: {
-        totalClicks: { increment: 1 },
-        lastClickedAt: new Date(),
-      },
-    });
-    res.redirect(302, link.targetUrl);
-  } catch (err) {
-    next(err);
+export async function redirectForCode(code: string) {
+  const link = await prisma.link.findUnique({ where: { code } });
+  if (!link) {
+    return null;
   }
+  await prisma.link.update({
+    where: { code },
+    data: {
+      totalClicks: { increment: 1 },
+      lastClickedAt: new Date(),
+    },
+  });
+  return link.targetUrl;
 }

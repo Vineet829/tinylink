@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { createLink, listLinks, getLinkStats, deleteLink } from '../api/links.service';
+import { createLink, listLinks, getLinkStats, deleteLink } from '../services/links.service';
 
 const router = Router();
 
