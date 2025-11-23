@@ -7,6 +7,7 @@ import EmptyState from '../components/ui/EmptyState';
 import ErrorMessage from '../components/ui/ErrorMessage';
 import { getAllLinks, deleteLink } from '../api/api';
 import type { Link } from '../types';
+import { ERROR_MESSAGES, TEXT } from '../constants';
 
 export default function Dashboard() {
   const [links, setLinks] = useState<Link[]>([]);
@@ -21,7 +22,7 @@ export default function Dashboard() {
       const data = await getAllLinks();
       setLinks(data);
     } catch (err: any) {
-      setError(err.message || 'Failed to load links. Please try again.');
+      setError(err.message || ERROR_MESSAGES.FETCH_LINKS);
     } finally {
       setLoading(false);
     }
@@ -37,7 +38,7 @@ export default function Dashboard() {
       await deleteLink(code);
       setLinks(links.filter((link) => link.code !== code));
     } catch (err: any) {
-      alert(err.message || 'Failed to delete link. Please try again.');
+      alert(err.message || ERROR_MESSAGES.DELETE_LINK);
     } finally {
       setDeleting(null);
     }
@@ -47,8 +48,8 @@ export default function Dashboard() {
     <Layout>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard</h1>
-          <p className="text-gray-600">Create and manage your short links</p>
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">{TEXT.DASHBOARD_TITLE}</h1>
+          <p className="text-gray-600">{TEXT.DASHBOARD_DESCRIPTION}</p>
         </div>
 
         <div className="space-y-8">
@@ -62,7 +63,7 @@ export default function Dashboard() {
             </div>
           ) : links.length === 0 ? (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <EmptyState message="No short links yet. Create your first one above!" />
+              <EmptyState message={TEXT.EMPTY_LINKS} />
             </div>
           ) : (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">

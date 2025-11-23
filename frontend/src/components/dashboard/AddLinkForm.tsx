@@ -3,6 +3,7 @@ import { isValidUrl, isValidCode } from '../../utils/helpers';
 import { createLink } from '../../api/api';
 import ErrorMessage from '../ui/ErrorMessage';
 import SuccessMessage from '../ui/SuccessMessage';
+import { ERROR_MESSAGES, SUCCESS_MESSAGES, TEXT } from '../../constants';
 
 interface AddLinkFormProps {
   onSuccess: () => void;
@@ -19,11 +20,11 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
 
   const validateTargetUrl = (url: string) => {
     if (!url) {
-      setUrlError('URL is required');
+      setUrlError(ERROR_MESSAGES.URL_REQUIRED);
       return false;
     }
     if (!isValidUrl(url)) {
-      setUrlError('Please enter a valid URL (http:// or https://)');
+      setUrlError(ERROR_MESSAGES.URL_INVALID);
       return false;
     }
     setUrlError('');
@@ -32,7 +33,7 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
 
   const validateCustomCode = (code: string) => {
     if (code && !isValidCode(code)) {
-      setCodeError('Code must be 6-8 alphanumeric characters');
+      setCodeError(ERROR_MESSAGES.CODE_INVALID);
       return false;
     }
     setCodeError('');
@@ -60,7 +61,7 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
       }
 
       await createLink(data);
-      setSuccess('Link created successfully!');
+      setSuccess(SUCCESS_MESSAGES.LINK_CREATED);
       setTargetUrl('');
       setCustomCode('');
       setTimeout(() => {
@@ -69,9 +70,9 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
       }, 1500);
     } catch (err: any) {
       if (err.message.includes('409') || err.message.toLowerCase().includes('exists')) {
-        setError('This custom code is already taken. Please choose another one.');
+        setError(ERROR_MESSAGES.CODE_TAKEN);
       } else {
-        setError(err.message || 'Failed to create link. Please try again.');
+        setError(err.message || ERROR_MESSAGES.CREATE_LINK);
       }
     } finally {
       setLoading(false);
@@ -80,14 +81,14 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
 
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-      <h2 className="text-xl font-bold text-gray-900 mb-4">Create New Short Link</h2>
-      
+      <h2 className="text-xl font-bold text-gray-900 mb-4">{TEXT.CREATE_LINK_TITLE}</h2>
+
       {error && (
         <div className="mb-4">
           <ErrorMessage message={error} onRetry={() => setError('')} />
         </div>
       )}
-      
+
       {success && (
         <div className="mb-4">
           <SuccessMessage message={success} />
@@ -121,7 +122,7 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
 
         <div>
           <label htmlFor="customCode" className="block text-sm font-medium text-gray-700 mb-1">
-            Custom Short Code <span className="text-gray-400">(optional)</span>
+            Custom Short Code <span className="text-gray-400">{TEXT.OPTIONAL}</span>
           </label>
           <input
             id="customCode"
@@ -143,7 +144,7 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
             <p className="mt-1 text-sm text-red-600">{codeError}</p>
           )}
           <p className="mt-1 text-sm text-gray-500">
-            Leave empty for auto-generated code
+            {TEXT.AUTO_GENERATED_CODE_NOTE}
           </p>
         </div>
 
@@ -152,7 +153,7 @@ export default function AddLinkForm({ onSuccess }: AddLinkFormProps) {
           disabled={loading || !!urlError || !!codeError}
           className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-medium w-full sm:w-auto"
         >
-          {loading ? 'Creating...' : 'Create Short Link'}
+          {loading ? TEXT.CREATING : TEXT.CREATE_SHORT_LINK}
         </button>
       </form>
     </div>

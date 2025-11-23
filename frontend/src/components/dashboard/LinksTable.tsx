@@ -2,7 +2,8 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import type { Link } from '../../types';
 import { formatDate, truncateUrl, copyToClipboard } from '../../utils/helpers';
-import { HiCheckCircle, HiOutlineClipboard} from 'react-icons/hi';
+import { HiCheckCircle, HiOutlineClipboard } from 'react-icons/hi';
+import { TEXT } from '../../constants';
 
 interface LinksTableProps {
   links: Link[];
@@ -59,7 +60,7 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
   };
 
   const handleDelete = (code: string) => {
-    if (confirm(`Are you sure you want to delete the link "${code}"?`)) {
+    if (confirm(`${TEXT.DELETE_ACTION_CONFIRM} "${code}"?`)) {
       onDelete(code);
     }
   };
@@ -67,10 +68,10 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
   return (
     <div className="space-y-4">
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-        <h2 className="text-xl font-bold text-gray-900">Your Links</h2>
+        <h2 className="text-xl font-bold text-gray-900">{TEXT.YOUR_LINKS_TITLE}</h2>
         <input
           type="text"
-          placeholder="Search by code or URL..."
+          placeholder={TEXT.SEARCH_PLACEHOLDER}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
           className="w-full sm:max-w-sm px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
@@ -86,21 +87,21 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
                 onClick={() => handleSort('code')}
               >
                 <div className="flex items-center space-x-1">
-                  <span>Short Code</span>
+                  <span>{TEXT.SHORT_CODE_LABEL}</span>
                   {sortField === 'code' && (
                     <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </div>
               </th>
               <th className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider">
-                Target URL
+                {TEXT.TARGET_URL_LABEL}
               </th>
               <th
                 className="px-4 py-3 text-left text-xs font-medium text-gray-700 uppercase tracking-wider cursor-pointer hover:bg-gray-100"
                 onClick={() => handleSort('totalClicks')}
               >
                 <div className="flex items-center space-x-1">
-                  <span>Clicks</span>
+                  <span>{TEXT.CLICKS_LABEL}</span>
                   {sortField === 'totalClicks' && (
                     <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
@@ -111,14 +112,14 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
                 onClick={() => handleSort('lastClickedAt')}
               >
                 <div className="flex items-center space-x-1">
-                  <span>Last Clicked</span>
+                  <span>{TEXT.LAST_CLICKED_LABEL}</span>
                   {sortField === 'lastClickedAt' && (
                     <span>{sortDirection === 'asc' ? '↑' : '↓'}</span>
                   )}
                 </div>
               </th>
               <th className="px-4 py-3 text-right text-xs font-medium text-gray-700 uppercase tracking-wider">
-                Actions
+                {TEXT.ACTIONS_LABEL}
               </th>
             </tr>
           </thead>
@@ -133,7 +134,7 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
                     <button
                       onClick={() => handleCopy(link.code)}
                       className="text-gray-400 hover:text-gray-600"
-                      title="Copy short URL"
+                      title={TEXT.COPY_URL}
                     >
                       {copiedCode === link.code ? (
                         <HiCheckCircle className="w-4 h-4 text-green-500" />
@@ -164,16 +165,16 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
                   <div className="flex justify-end space-x-2">
                     <RouterLink
                       to={`/code/${link.code}`}
-                      className="text-sm text-indigo-600 hover:text-indigo-800 font-medium"
+                      className="text-sm text-indigo-600 hover:text-indigo-800 font-medium px-2 py-1 cursor-pointer"
                     >
-                      Stats
+                      {TEXT.STATS_LINK_TEXT}
                     </RouterLink>
                     <button
                       onClick={() => handleDelete(link.code)}
                       disabled={deleting === link.code}
                       className="bg-red-600 text-white px-3 py-1.5 rounded hover:bg-red-700 transition-colors text-sm font-medium disabled:opacity-50"
                     >
-                      {deleting === link.code ? 'Deleting...' : 'Delete'}
+                      {deleting === link.code ? TEXT.DELETING_TEXT : TEXT.DELETE_BUTTON_TEXT}
                     </button>
                   </div>
                 </td>
@@ -185,7 +186,7 @@ export default function LinksTable({ links, onDelete, deleting }: LinksTableProp
 
       {sortedLinks.length === 0 && (
         <p className="text-center py-8 text-gray-500">
-          {searchTerm ? 'No links found matching your search.' : 'No links yet.'}
+          {searchTerm ? TEXT.EMPTY_SEARCH_RESULTS : TEXT.EMPTY_LINKS}
         </p>
       )}
     </div>
